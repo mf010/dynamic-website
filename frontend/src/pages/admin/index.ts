@@ -1,0 +1,7 @@
+export { default as AdminLogin } from './Login'
+export { default as AdminLayout } from './Layout'
+export { default as Dashboard } from './Dashboard'
+export { default as Settings } from './Settings'
+export { default as Messages } from './Messages'
+export * from './news'
+export * from './services'

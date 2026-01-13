@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirect root domain to React
+    RewriteCond %{REQUEST_URI} ^/$
+    RewriteRule ^$ /public/react/ [L]
+
+    # Redirect /api requests to Laravel public_SS
+    RewriteCond %{REQUEST_URI} ^/api
+    RewriteRule ^api/(.*)$ /public_SS/api/$1 [L]
+
+    # Optional: remove trailing slash
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+</IfModule>

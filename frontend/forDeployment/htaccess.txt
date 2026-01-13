@@ -1,0 +1,12 @@
+# Serve React frontend properly with Vite build
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /backend/public/react/
+    
+    # If a file or folder exists, serve it directly
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Otherwise, redirect all requests to index.html
+    RewriteRule ^ index.html [L]
+</IfModule>

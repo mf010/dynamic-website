@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Block sensitive directories
+Disallow: /admin/
+Disallow: /storage/logs/
+Disallow: /vendor/
+Disallow: /node_modules/
+Disallow: /*.sql$
+Disallow: /*.env$
+
+# Allow public assets
+Allow: /build/
+Allow: /storage/app/public/
+
+# Sitemap location (update with your domain)
+# Sitemap: https://yourdomain.com/sitemap.xml

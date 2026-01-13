@@ -1,0 +1,7 @@
+export { default as Home } from './Home'
+export { default as About } from './About'
+export { default as MissionVision } from './MissionVision'
+export { default as News } from './News'
+export { default as NewsDetail } from './NewsDetail'
+export { default as Gallery } from './Gallery'
+export { default as NotFound } from './NotFound'
