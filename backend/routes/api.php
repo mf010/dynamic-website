@@ -10,39 +10,34 @@ use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// ============================================
-// Public routes (NO authentication/authorization)
-// ============================================
+    // Public routes (no authentication required)
+    Route::post('/register', [UserController::class, 'register']);
+    Route::post('/login', [UserController::class, 'login']);
+    
+    // Public news routes - READ ONLY
+    Route::get('/news', [NewsController::class, 'index']);
+    Route::get('/news/{id}', [NewsController::class, 'show']);
 
-Route::post('/register', [UserController::class, 'register']);
-Route::post('/login', [UserController::class, 'login']);
-
-// View endpoints (public)
-Route::apiResource('news', NewsController::class)->only(['index', 'show']);
-Route::apiResource('services', ApiServiceController::class)->only(['index', 'show']);
-Route::apiResource('pages', ApiPageController::class)->only(['index', 'show']);
-Route::apiResource('sliders', ApiSliderController::class)->only(['index', 'show']);
-Route::apiResource('images', ApiImageController::class)->only(['index', 'show']);
-
-// Contacts (public)
-// POST /api/contact is used by the React frontend
-Route::post('/contact', [ApiContactController::class, 'store']);
-Route::apiResource('contacts', ApiContactController::class)->only(['index', 'show']);
-
-// ============================================
-// Protected routes (authentication required)
-// ============================================
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [UserController::class, 'logout']);
-
-    // User routes
-    Route::apiResource('users', UserController::class);
-
-    // News write endpoints (protected)
-    Route::apiResource('news', NewsController::class)->except(['index', 'show']);
-
-    // Upload routes
-    Route::post('/upload/image', [UploadController::class, 'uploadImage']);
-    Route::post('/upload/images', [UploadController::class, 'uploadImages']);
-    Route::delete('/upload/image', [UploadController::class, 'deleteImage']);
-});
+    // Protected routes (authentication required)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [UserController::class, 'logout']);
+        
+        // Get current user
+        Route::get('/user', function (\Illuminate\Http\Request $request) {
+            return response()->json($request->user());
+        });
+        
+        // User management routes
+        Route::apiResource('users', UserController::class);
+        
+        // News management routes (create, update, delete)
+        Route::post('/news', [NewsController::class, 'store']);
+        Route::put('/news/{id}', [NewsController::class, 'update']);
+        Route::patch('/news/{id}', [NewsController::class, 'update']);
+        Route::delete('/news/{id}', [NewsController::class, 'destroy']);
+        
+        // Upload routes
+        Route::post('/upload/image', [UploadController::class, 'uploadImage']);
+        Route::post('/upload/images', [UploadController::class, 'uploadImages']);
+        Route::delete('/upload/image', [UploadController::class, 'deleteImage']);
+    });

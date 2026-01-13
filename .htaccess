@@ -1,16 +1,33 @@
 <IfModule mod_rewrite.c>
-    RewriteEngine On
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
 
-    # Redirect root domain to React
-    RewriteCond %{REQUEST_URI} ^/$
-    RewriteRule ^$ /public/react/ [L]
+    RewriteEngine On
 
     # Redirect /api requests to Laravel public_SS
     RewriteCond %{REQUEST_URI} ^/api
     RewriteRule ^api/(.*)$ /public_SS/api/$1 [L]
 
-    # Optional: remove trailing slash
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    # Redirect /storage requests to Laravel public_SS/storage (for uploaded files)
+    RewriteCond %{REQUEST_URI} ^/storage
+    RewriteRule ^storage/(.*)$ /public_SS/storage/$1 [L]
+
+    # Serve actual files (JS, CSS, images) from /public/react if they exist
+    RewriteCond %{REQUEST_URI} ^/public/react/
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f
+    RewriteRule ^ - [L]
+
+    # Serve actual files from root if they exist
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # For all other requests, serve the React SPA
+    RewriteCond %{REQUEST_URI} !^/api
+    RewriteCond %{REQUEST_URI} !^/storage
+    RewriteCond %{REQUEST_URI} !^/public_SS
+    RewriteRule ^ /public/react/index.html [L]
 </IfModule>
+
+# Fallback DirectoryIndex
+DirectoryIndex /public/react/index.html
