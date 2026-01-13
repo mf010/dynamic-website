@@ -14,7 +14,14 @@ class NewsController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $news = News::with('images')->get();
+            $query = News::with('images');
+
+            // If no authentication, only expose published news
+            if (!auth('sanctum')->check()) {
+                $query->published();
+            }
+
+            $news = $query->latest('published_at')->get();
             return response()->json([
                 'success' => true,
                 'data' => $news,
@@ -88,7 +95,22 @@ class NewsController extends Controller
     public function show(string $id): JsonResponse
     {
         try {
-            $news = News::with('images')->findOrFail($id);
+            $query = News::with('images');
+
+            // If no authentication, only expose published news
+            if (!auth('sanctum')->check()) {
+                $query->published();
+            }
+
+            $news = $query
+                ->where(function ($q) use ($id) {
+                    if (ctype_digit($id)) {
+                        $q->where('id', (int) $id);
+                    } else {
+                        $q->where('slug', $id);
+                    }
+                })
+                ->firstOrFail();
             return response()->json([
                 'success' => true,
                 'data' => $news,
