@@ -1,4 +1,8 @@
 <IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
     RewriteEngine On
 
     # Redirect /api requests to Laravel public_SS
@@ -14,14 +18,16 @@
     RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f
     RewriteRule ^ - [L]
 
+    # Serve actual files from root if they exist
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
     # For all other requests, serve the React SPA
-    # If the request is not an existing file or directory
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    # And it's not an API or storage request (already handled above)
     RewriteCond %{REQUEST_URI} !^/api
     RewriteCond %{REQUEST_URI} !^/storage
     RewriteCond %{REQUEST_URI} !^/public_SS
-    # Serve the React index.html
     RewriteRule ^ /public/react/index.html [L]
 </IfModule>
+
+# Fallback DirectoryIndex
+DirectoryIndex /public/react/index.html

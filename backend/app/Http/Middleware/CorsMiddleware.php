@@ -18,8 +18,10 @@ class CorsMiddleware
 
         // Get allowed origins from environment or use defaults
         $allowedOrigins = [
-            'https://rekazcode.ly',
-            'http://rekazcode.ly',
+            'https://unitedelite.ly',
+            'http://unitedelite.ly',
+            'https://www.unitedelite.ly',
+            'http://www.unitedelite.ly',
             'http://localhost:5173',
             'http://localhost:3000',
             'http://127.0.0.1:5173',
@@ -32,7 +34,7 @@ class CorsMiddleware
         if ($origin && (in_array($origin, $allowedOrigins) || config('app.debug'))) {
             $response->headers->set('Access-Control-Allow-Origin', $origin);
         } else {
-            $response->headers->set('Access-Control-Allow-Origin', 'https://rekazcode.ly');
+            $response->headers->set('Access-Control-Allow-Origin', 'https://unitedelite.ly');
         }
         
         $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
