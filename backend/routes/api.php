@@ -5,19 +5,31 @@ use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-    // Public routes
+    // Public routes (no authentication required)
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
+    
+    // Public news routes - READ ONLY
+    Route::get('/news', [NewsController::class, 'index']);
+    Route::get('/news/{id}', [NewsController::class, 'show']);
 
-    // Protected routes
+    // Protected routes (authentication required)
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [UserController::class, 'logout']);
         
-        // User routes
+        // Get current user
+        Route::get('/user', function (\Illuminate\Http\Request $request) {
+            return response()->json($request->user());
+        });
+        
+        // User management routes
         Route::apiResource('users', UserController::class);
         
-        // News routes
-        Route::apiResource('news', NewsController::class);
+        // News management routes (create, update, delete)
+        Route::post('/news', [NewsController::class, 'store']);
+        Route::put('/news/{id}', [NewsController::class, 'update']);
+        Route::patch('/news/{id}', [NewsController::class, 'update']);
+        Route::delete('/news/{id}', [NewsController::class, 'destroy']);
         
         // Upload routes
         Route::post('/upload/image', [UploadController::class, 'uploadImage']);

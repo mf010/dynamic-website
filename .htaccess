@@ -1,16 +1,27 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Redirect root domain to React
-    RewriteCond %{REQUEST_URI} ^/$
-    RewriteRule ^$ /public/react/ [L]
-
     # Redirect /api requests to Laravel public_SS
     RewriteCond %{REQUEST_URI} ^/api
     RewriteRule ^api/(.*)$ /public_SS/api/$1 [L]
 
-    # Optional: remove trailing slash
+    # Redirect /storage requests to Laravel public_SS/storage (for uploaded files)
+    RewriteCond %{REQUEST_URI} ^/storage
+    RewriteRule ^storage/(.*)$ /public_SS/storage/$1 [L]
+
+    # Serve actual files (JS, CSS, images) from /public/react if they exist
+    RewriteCond %{REQUEST_URI} ^/public/react/
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f
+    RewriteRule ^ - [L]
+
+    # For all other requests, serve the React SPA
+    # If the request is not an existing file or directory
+    RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
+    # And it's not an API or storage request (already handled above)
+    RewriteCond %{REQUEST_URI} !^/api
+    RewriteCond %{REQUEST_URI} !^/storage
+    RewriteCond %{REQUEST_URI} !^/public_SS
+    # Serve the React index.html
+    RewriteRule ^ /public/react/index.html [L]
 </IfModule>

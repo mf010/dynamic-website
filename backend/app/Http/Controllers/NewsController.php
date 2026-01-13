@@ -10,11 +10,39 @@ class NewsController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * Supports pagination and optional filtering.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            $news = News::with('images')->get();
+            $query = News::with('images');
+            
+            // If not authenticated, only show published news
+            if (!auth('sanctum')->check()) {
+                $query->published();
+            }
+            
+            // Search filter
+            if ($request->has('search') && $request->search) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('content', 'like', "%{$search}%")
+                      ->orWhere('excerpt', 'like', "%{$search}%");
+                });
+            }
+            
+            // Order by latest
+            $query->orderBy('published_at', 'desc')->orderBy('created_at', 'desc');
+            
+            // Pagination
+            $perPage = $request->input('per_page', 10);
+            if ($request->has('paginate') && $request->paginate === 'false') {
+                $news = $query->get();
+            } else {
+                $news = $query->paginate($perPage);
+            }
+            
             return response()->json([
                 'success' => true,
                 'data' => $news,
@@ -84,11 +112,18 @@ class NewsController extends Controller
 
     /**
      * Display the specified resource.
+     * Accepts either an ID (numeric) or slug (string).
      */
     public function show(string $id): JsonResponse
     {
         try {
-            $news = News::with('images')->findOrFail($id);
+            // Check if $id is numeric (ID) or string (slug)
+            if (is_numeric($id)) {
+                $news = News::with('images')->findOrFail($id);
+            } else {
+                $news = News::with('images')->where('slug', $id)->firstOrFail();
+            }
+            
             return response()->json([
                 'success' => true,
                 'data' => $news,

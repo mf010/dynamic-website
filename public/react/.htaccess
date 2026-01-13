@@ -1,4 +1,3 @@
-# Serve React frontend properly with Vite build
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /public/react/
