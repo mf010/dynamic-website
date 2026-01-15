@@ -5,9 +5,9 @@
 
     RewriteEngine On
 
-    # Redirect /api requests to Laravel public_SS
+    # Redirect /api requests to Laravel public_SS (keep /api prefix)
     RewriteCond %{REQUEST_URI} ^/api
-    RewriteRule ^api/(.*)$ /public_SS/api/$1 [L]
+    RewriteRule ^(.*)$ /public_SS/$1 [L]
 
     # Redirect /storage requests to Laravel public_SS/storage (for uploaded files)
     RewriteCond %{REQUEST_URI} ^/storage
