@@ -142,29 +142,37 @@ const Footer = () => {
                   </span>
                 </li>
               )}
-              {settings.contact_phone && (
-                <li className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <PhoneIcon className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                  <a
-                    href={`tel:${settings.contact_phone}`}
-                    className="text-neutral-400 hover:text-white transition-colors"
-                    dir="ltr"
-                  >
-                    {settings.contact_phone}
-                  </a>
-                </li>
-              )}
-              {settings.contact_email && (
-                <li className="flex items-center space-x-3 rtl:space-x-reverse">
-                  <EnvelopeIcon className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                  <a
-                    href={`mailto:${settings.contact_email}`}
-                    className="text-neutral-400 hover:text-white transition-colors"
-                  >
-                    {settings.contact_email}
-                  </a>
-                </li>
-              )}
+              {/* Phone Numbers */}
+              <li className="flex items-center space-x-3 rtl:space-x-reverse">
+                <PhoneIcon className="w-5 h-5 text-primary-500 flex-shrink-0" />
+                <a
+                  href="tel:092325060"
+                  className="text-neutral-400 hover:text-white transition-colors"
+                  dir="ltr"
+                >
+                  092 325 060
+                </a>
+              </li>
+              <li className="flex items-center space-x-3 rtl:space-x-reverse">
+                <PhoneIcon className="w-5 h-5 text-primary-500 flex-shrink-0" />
+                <a
+                  href="tel:0913250606"
+                  className="text-neutral-400 hover:text-white transition-colors"
+                  dir="ltr"
+                >
+                  091 325 0606
+                </a>
+              </li>
+              {/* Email */}
+              <li className="flex items-center space-x-3 rtl:space-x-reverse">
+                <EnvelopeIcon className="w-5 h-5 text-primary-500 flex-shrink-0" />
+                <a
+                  href="mailto:Info@unitedelite.ly"
+                  className="text-neutral-400 hover:text-white transition-colors"
+                >
+                  Info@unitedelite.ly
+                </a>
+              </li>
             </ul>
           </div>
         </div>
