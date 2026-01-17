@@ -38,15 +38,22 @@ const NewsList = () => {
         search,
         per_page: 10,
       })
-      
-      // Handle different response structures
-      if (response.data?.data) {
-        setNews(Array.isArray(response.data.data) ? response.data.data : [])
-        if (response.data?.meta) {
-          setMeta(response.data.meta)
-        }
-      } else if (Array.isArray(response.data)) {
-        setNews(response.data)
+
+      // Handle Laravel paginator response structure
+      // response.data = { success, data: { data: [...items], current_page, last_page, per_page, total } }
+      const apiData = response.data?.data
+      if (apiData?.data) {
+        // Paginated response: items are in apiData.data
+        setNews(Array.isArray(apiData.data) ? apiData.data : [])
+        setMeta({
+          current_page: apiData.current_page,
+          last_page: apiData.last_page,
+          per_page: apiData.per_page,
+          total: apiData.total,
+        })
+      } else if (Array.isArray(apiData)) {
+        // Direct array response (non-paginated)
+        setNews(apiData)
       } else {
         setNews([])
       }
@@ -159,11 +166,10 @@ const NewsList = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`px-2 py-1 text-xs rounded ${
-                            item.is_published
+                          className={`px-2 py-1 text-xs rounded ${item.is_published
                               ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
                               : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
-                          }`}
+                            }`}
                         >
                           {item.is_published ? 'Published' : 'Draft'}
                         </span>

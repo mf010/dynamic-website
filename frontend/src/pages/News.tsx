@@ -41,7 +41,7 @@ const Lightbox = ({ images, currentIndex, onClose, onNext, onPrev }: LightboxPro
         >
           <XMarkIcon className="w-8 h-8" />
         </button>
-        
+
         {/* Navigation */}
         {images.length > 1 && (
           <>
@@ -59,7 +59,7 @@ const Lightbox = ({ images, currentIndex, onClose, onNext, onPrev }: LightboxPro
             </button>
           </>
         )}
-        
+
         {/* Image */}
         <motion.img
           key={currentIndex}
@@ -71,7 +71,7 @@ const Lightbox = ({ images, currentIndex, onClose, onNext, onPrev }: LightboxPro
           className="max-h-[90vh] max-w-[90vw] object-contain"
           onClick={(e) => e.stopPropagation()}
         />
-        
+
         {/* Counter */}
         {images.length > 1 && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm">
@@ -94,18 +94,18 @@ const News = () => {
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('')
   const [categories, setCategories] = useState<string[]>([])
-  
+
   // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxImages, setLightboxImages] = useState<string[]>([])
   const [lightboxIndex, setLightboxIndex] = useState(0)
-  
+
   const openLightbox = (images: string[], index: number) => {
     setLightboxImages(images)
     setLightboxIndex(index)
     setLightboxOpen(true)
   }
-  
+
   const closeLightbox = () => setLightboxOpen(false)
   const nextImage = () => setLightboxIndex((i) => (i + 1) % lightboxImages.length)
   const prevImage = () => setLightboxIndex((i) => (i - 1 + lightboxImages.length) % lightboxImages.length)
@@ -129,11 +129,11 @@ const News = () => {
     const fetchNews = async () => {
       setLoading(true)
       setError(null)
-      
+
       // Debug: Check if token exists
       const token = localStorage.getItem('admin_token')
       console.log('Fetching news, token exists:', !!token)
-      
+
       try {
         const response = await newsApi.getAll({
           page,
@@ -141,22 +141,19 @@ const News = () => {
           search: search || undefined,
           category: category || undefined,
         })
-        
+
         console.log('News API response:', response.data)
-        
-        // Handle different response structures from Laravel
-        if (response.data?.data) {
-          // If response has nested data (standard Laravel resource)
-          setNews(Array.isArray(response.data.data) ? response.data.data : [response.data.data])
-          // Handle pagination meta if available
-          if (response.data?.meta) {
-            setTotalPages(response.data.meta.last_page || 1)
-          } else {
-            setTotalPages(1)
-          }
-        } else if (Array.isArray(response.data)) {
-          // Direct array response
-          setNews(response.data)
+
+        // Handle Laravel paginator response structure
+        // response.data = { success, data: { data: [...items], current_page, last_page, per_page, total } }
+        const apiData = response.data?.data
+        if (apiData?.data) {
+          // Paginated response: items are in apiData.data
+          setNews(Array.isArray(apiData.data) ? apiData.data : [])
+          setTotalPages(apiData.last_page || 1)
+        } else if (Array.isArray(apiData)) {
+          // Direct array response (non-paginated)
+          setNews(apiData)
           setTotalPages(1)
         } else {
           setNews([])
@@ -166,16 +163,16 @@ const News = () => {
         console.error('Error fetching news:', error)
         // Handle different error types gracefully for public page
         if (error.response?.status === 401) {
-          setError(language === 'ar' 
-            ? 'يرجى تسجيل الدخول لعرض الأخبار' 
+          setError(language === 'ar'
+            ? 'يرجى تسجيل الدخول لعرض الأخبار'
             : 'Please login to view news')
         } else if (error.response?.status === 500) {
-          setError(language === 'ar' 
-            ? 'الأخبار غير متاحة حالياً' 
+          setError(language === 'ar'
+            ? 'الأخبار غير متاحة حالياً'
             : 'News is currently unavailable')
         } else {
-          setError(language === 'ar' 
-            ? 'حدث خطأ أثناء تحميل الأخبار' 
+          setError(language === 'ar'
+            ? 'حدث خطأ أثناء تحميل الأخبار'
             : 'Error loading news')
         }
         setNews([])
@@ -222,7 +219,7 @@ const News = () => {
               {language === 'ar' ? 'الأخبار' : 'News'}
             </h1>
             <p className="text-xl text-white/80">
-              {language === 'ar' 
+              {language === 'ar'
                 ? 'تابع آخر أخبارنا وتحديثاتنا'
                 : 'Stay updated with our latest news and updates'}
             </p>
@@ -277,12 +274,12 @@ const News = () => {
             <div className="mb-8 p-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-center">
               <p className="text-amber-700 dark:text-amber-400 text-lg mb-4">{error}</p>
               <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-                {language === 'ar' 
+                {language === 'ar'
                   ? 'يمكنك تسجيل الدخول كمسؤول لإدارة الأخبار'
                   : 'You can login as admin to manage news'}
               </p>
-              <Link 
-                to="/admin/login" 
+              <Link
+                to="/admin/login"
                 className="inline-block px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
               >
                 {language === 'ar' ? 'تسجيل الدخول' : 'Admin Login'}
@@ -314,7 +311,7 @@ const News = () => {
                   onPrev={prevImage}
                 />
               )}
-              
+
               <motion.div
                 className="flex flex-col gap-12 max-w-4xl mx-auto"
                 variants={staggerContainer}
@@ -324,13 +321,13 @@ const News = () => {
                 {news.map((item) => {
                   // Collect all images (featured + gallery)
                   const allImages: string[] = []
-                  
+
                   // Add featured image
                   if (item.featured_image) {
                     const featuredUrl = getImageUrl(item.featured_image)
                     if (featuredUrl) allImages.push(featuredUrl)
                   }
-                  
+
                   // Add gallery images from the images relationship
                   if (item.images && Array.isArray(item.images)) {
                     item.images.forEach((img: any) => {
@@ -338,17 +335,17 @@ const News = () => {
                       if (imgUrl) allImages.push(imgUrl)
                     })
                   }
-                  
+
                   const hasImages = allImages.length > 0
                   const mainImage = allImages[0]
                   const galleryImages = allImages.slice(1)
-                  
+
                   return (
                     <motion.div key={item.id} variants={fadeInUp}>
                       <article className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl overflow-hidden">
                         {/* Main Featured Image */}
                         {mainImage && (
-                          <div 
+                          <div
                             className="relative h-80 md:h-[28rem] overflow-hidden cursor-pointer group"
                             onClick={() => openLightbox(allImages, 0)}
                           >
@@ -363,14 +360,14 @@ const News = () => {
                             />
                             {/* Overlay gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                            
+
                             {/* Category badge */}
                             {item.category && (
                               <span className="absolute top-4 left-4 px-4 py-1.5 bg-primary-600 text-white text-sm font-medium rounded-full">
                                 {item.category}
                               </span>
                             )}
-                            
+
                             {/* View indicator */}
                             {allImages.length > 1 && (
                               <div className="absolute top-4 right-4 px-3 py-1.5 bg-black/50 text-white text-sm rounded-full flex items-center gap-1.5">
@@ -378,7 +375,7 @@ const News = () => {
                                 <span>{allImages.length} {language === 'ar' ? 'صور' : 'photos'}</span>
                               </div>
                             )}
-                            
+
                             {/* Title overlay on image */}
                             <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                               <div className="flex items-center gap-3 text-white/80 text-sm mb-3">
@@ -400,7 +397,7 @@ const News = () => {
                             </div>
                           </div>
                         )}
-                        
+
                         {/* Gallery thumbnails */}
                         {galleryImages.length > 0 && (
                           <div className="px-6 md:px-8 py-4 bg-neutral-50 dark:bg-neutral-900/50 border-b border-neutral-200 dark:border-neutral-700">
@@ -421,7 +418,7 @@ const News = () => {
                             </div>
                           </div>
                         )}
-                        
+
                         {/* Content */}
                         <div className="p-6 md:p-8">
                           {/* Title for articles without images */}
@@ -438,17 +435,17 @@ const News = () => {
                               </h2>
                             </>
                           )}
-                          
+
                           {/* Article content */}
-                          <div 
+                          <div
                             className="text-neutral-700 dark:text-neutral-300 prose prose-lg prose-neutral dark:prose-invert max-w-none
                               prose-headings:text-neutral-900 dark:prose-headings:text-white
                               prose-p:leading-relaxed
                               prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline
                               prose-img:rounded-xl prose-img:shadow-lg"
-                            dangerouslySetInnerHTML={{ 
-                              __html: language === 'ar' 
-                                ? (item.content_ar || item.content || '') 
+                            dangerouslySetInnerHTML={{
+                              __html: language === 'ar'
+                                ? (item.content_ar || item.content || '')
                                 : (item.content || '')
                             }}
                           />
