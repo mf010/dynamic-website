@@ -137,6 +137,32 @@ class NewsController extends Controller
     }
 
     /**
+     * Return unique categories available in news table.
+     */
+    public function categories(): JsonResponse
+    {
+        try {
+            $categories = News::query()
+                ->whereNotNull('category')
+                ->select('category')
+                ->distinct()
+                ->pluck('category')
+                ->filter()
+                ->values();
+
+            return response()->json([
+                'success' => true,
+                'data' => $categories,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve categories',
+            ], 500);
+        }
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id): JsonResponse

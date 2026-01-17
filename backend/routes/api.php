@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\PageController as ApiPageController;
 use App\Http\Controllers\Api\ServiceController as ApiServiceController;
 use App\Http\Controllers\Api\SliderController as ApiSliderController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\Api\SettingController as ApiSettingController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +18,11 @@ use Illuminate\Support\Facades\Route;
     // Public news routes - READ ONLY
     Route::get('/news', [NewsController::class, 'index']);
     Route::get('/news/{id}', [NewsController::class, 'show']);
+    // Categories for news (used by frontend)
+    Route::get('/news/categories', [NewsController::class, 'categories']);
+
+    // Public settings endpoint used by frontend
+    Route::get('/settings', [ApiSettingController::class, 'index']);
 
     // Protected routes (authentication required)
     Route::middleware('auth:sanctum')->group(function () {
