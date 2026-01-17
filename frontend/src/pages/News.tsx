@@ -147,15 +147,20 @@ const News = () => {
         // Handle Laravel paginator response structure
         // response.data = { success, data: { data: [...items], current_page, last_page, per_page, total } }
         const apiData = response.data?.data
+        console.log('Public News API extracted apiData:', apiData)
+
         if (apiData?.data) {
+          console.log('Found paginated data, items count:', apiData.data.length)
           // Paginated response: items are in apiData.data
           setNews(Array.isArray(apiData.data) ? apiData.data : [])
           setTotalPages(apiData.last_page || 1)
         } else if (Array.isArray(apiData)) {
+          console.log('Found array data, items count:', apiData.length)
           // Direct array response (non-paginated)
           setNews(apiData)
           setTotalPages(1)
         } else {
+          console.warn('Could not find news data in response')
           setNews([])
           setTotalPages(1)
         }

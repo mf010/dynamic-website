@@ -39,10 +39,16 @@ const NewsList = () => {
         per_page: 10,
       })
 
+      console.log('Admin News API full response:', response)
+      console.log('Admin News API data body:', response.data)
+
       // Handle Laravel paginator response structure
       // response.data = { success, data: { data: [...items], current_page, last_page, per_page, total } }
       const apiData = response.data?.data
+      console.log('Admin News API extracted apiData:', apiData)
+
       if (apiData?.data) {
+        console.log('Found paginated data, items count:', apiData.data.length)
         // Paginated response: items are in apiData.data
         setNews(Array.isArray(apiData.data) ? apiData.data : [])
         setMeta({
@@ -52,9 +58,11 @@ const NewsList = () => {
           total: apiData.total,
         })
       } else if (Array.isArray(apiData)) {
+        console.log('Found array data, items count:', apiData.length)
         // Direct array response (non-paginated)
         setNews(apiData)
       } else {
+        console.warn('Could not find news data in response. Structure seems validation failed or empty.')
         setNews([])
       }
     } catch (error) {
@@ -167,8 +175,8 @@ const NewsList = () => {
                       <div className="flex items-center gap-2">
                         <span
                           className={`px-2 py-1 text-xs rounded ${item.is_published
-                              ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                              : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                            : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
                             }`}
                         >
                           {item.is_published ? 'Published' : 'Draft'}
