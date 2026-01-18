@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { ArrowRightIcon, ArrowLeftIcon, CalendarIcon, TagIcon, ShareIcon } from '@heroicons/react/24/outline'
 import { useSettingsStore, useLanguageStore } from '@/store'
-import { newsApi } from '@/lib/api'
+import { newsApi, getImageUrl } from '@/lib/api'
 import { News } from '@/types'
 
 const NewsDetail = () => {
@@ -191,7 +191,7 @@ const NewsDetail = () => {
             >
               {article.featured_image && (
                 <img
-                  src={article.featured_image}
+                  src={getImageUrl(article.featured_image) || article.featured_image}
                   alt={title}
                   className="w-full h-auto rounded-xl shadow-lg mb-8"
                 />
@@ -244,7 +244,7 @@ const NewsDetail = () => {
                         <div className="flex gap-4">
                           {item.featured_image && (
                             <img
-                              src={item.featured_image}
+                              src={getImageUrl(item.featured_image) || item.featured_image}
                               alt={language === 'ar' ? item.title_ar || item.title : item.title}
                               className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
                             />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeftIcon, PhotoIcon } from '@heroicons/react/24/outline'
-import api from '@/lib/api'
+import api, { getImageUrl } from '@/lib/api'
 
 interface ServiceFormData {
   title: string
@@ -392,7 +392,7 @@ const ServicesForm = () => {
               </h2>
               {formData.featured_image ? (
                 <img
-                  src={formData.featured_image}
+                  src={getImageUrl(formData.featured_image) || formData.featured_image}
                   alt="Featured"
                   className="w-full h-40 object-cover rounded-lg mb-4"
                 />
